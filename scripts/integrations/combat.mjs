@@ -130,7 +130,9 @@ export function renderSideControls(app, html) {
   const root = html instanceof HTMLElement ? html : html[0];
   if (!root) return;
   const combat = app.viewed;
-  root.querySelectorAll(".adventurepeak-sides, .adventurepeak-side-select").forEach(el => el.remove());
+  root.querySelectorAll(".adventurepeak-sides, .adventurepeak-side-select, .adventurepeak-side-buttons")
+    .forEach(el => el.remove());
+  root.querySelectorAll(".adventurepeak-controls-row").forEach(el => el.replaceWith(...el.childNodes));
   const panel = document.createElement("div");
   panel.className = "adventurepeak-sides";
   const state = combat.getFlag(MODULE_ID, "initiative");
@@ -152,36 +154,65 @@ export function renderSideControls(app, html) {
         .catch(report).finally(() => { button.disabled = false; });
     });
     panel.append(button);
-    const addSelect = (container, combatants, label) => {
-      const select = document.createElement("select");
-      select.className = "adventurepeak-side-select";
-      select.setAttribute("aria-label", label);
-      select.add(new Option("Assign side", ""));
-      for (const side of SIDES) select.add(new Option(side === "friendly" ? "Friendly" : "Hostile", side));
+    const addButtons = (container, combatants, label) => {
+      const buttons = document.createElement("span");
+      buttons.className = "adventurepeak-side-buttons";
+      buttons.setAttribute("role", "group");
+      buttons.setAttribute("aria-label", `Side for ${label}`);
       const sides = new Set(combatants.map(sideOf));
-      select.value = sides.size === 1 ? sideOf(combatants[0]) ?? "" : "";
-      // Keep native group header clicks from collapsing or recreating this control.
+      const selected = sides.size === 1 ? sideOf(combatants[0]) : undefined;
+      // Keep native controls and group headers from handling assignment clicks.
       for (const type of ["click", "pointerdown", "dblclick"]) {
-        select.addEventListener(type, event => event.stopPropagation());
+        buttons.addEventListener(type, event => event.stopPropagation());
       }
-      select.addEventListener("change", event => {
-        event.stopPropagation();
-        if (!SIDES.includes(select.value)) return;
-        select.disabled = true;
-        assignSide(combat, combatants, select.value).catch(report).finally(() => { select.disabled = false; });
-      });
-      container.append(select);
+      for (const side of SIDES) {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "inline-control adventurepeak-side-button";
+        button.dataset.side = side;
+        button.title = `Assign ${side}: ${label}`;
+        button.setAttribute("aria-label", button.title);
+        button.setAttribute("aria-pressed", String(selected === side));
+        const icon = document.createElement("i");
+        icon.className = `fa-solid ${side === "friendly" ? "fa-handshake" : "fa-skull-crossbones"}`;
+        icon.setAttribute("aria-hidden", "true");
+        button.append(icon);
+        button.addEventListener("click", event => {
+          event.preventDefault();
+          event.stopPropagation();
+          const controls = Array.from(buttons.querySelectorAll("button"));
+          controls.forEach(control => { control.disabled = true; });
+          assignSide(combat, combatants, side).then(() => {
+            controls.forEach(control => control.setAttribute("aria-pressed", String(control.dataset.side === side)));
+          }).catch(report).finally(() => { controls.forEach(control => { control.disabled = false; }); });
+        });
+        buttons.append(button);
+      }
+      const existing = container.querySelector(".combatant-controls");
+      if (existing) {
+        const row = document.createElement("div");
+        row.className = "adventurepeak-controls-row";
+        const separator = document.createElement("span");
+        separator.className = "adventurepeak-controls-separator";
+        separator.textContent = "|";
+        separator.setAttribute("aria-hidden", "true");
+        buttons.prepend(separator);
+        existing.replaceWith(row);
+        row.append(existing, buttons);
+      } else {
+        (container.querySelector(".token-name") ?? container).append(buttons);
+      }
     };
     for (const c of combat.combatants) {
       const row = root.querySelector(`[data-combatant-id="${c.id}"]`);
-      if (row) addSelect(row, [c], `Side for ${c.name}`);
+      if (row) addButtons(row, [c], c.name);
     }
     // dnd5e's visual groups are wrappers without a combatant ID of their own.
     for (const row of root.querySelectorAll(".combatant-group")) {
       const members = Array.from(row.querySelectorAll("[data-combatant-id]"), element =>
         combat.combatants.get(element.dataset.combatantId)).filter(Boolean);
       const header = row.querySelector(".group-header");
-      if (header && members.length) addSelect(header, members, "Side for this entire group");
+      if (header && members.length) addButtons(header, members, "this entire group");
     }
   }
   root.prepend(panel);

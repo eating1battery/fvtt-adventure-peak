@@ -6,4 +6,24 @@
 }
 .adventurepeak-rest label { display: flex; gap: 8px; align-items: center; }
 .adventurepeak-sides { display: flex; flex-direction: column; gap: 4px; }
-.adventurepeak-side-select { max-width: 95px; font-size: 11px; }
+.adventurepeak-controls-row { display: flex; align-items: center; gap: 3px; }
+.adventurepeak-controls-row > .combatant-controls { flex: 0 1 auto; min-width: 0; }
+.adventurepeak-side-buttons { display: inline-flex; align-items: center; gap: 3px; flex: 0 0 auto; }
+.adventurepeak-controls-separator { opacity: 0.6; margin: 0 2px; }
+.adventurepeak-side-buttons > .adventurepeak-side-button {
+  width: 18px;
+  height: 18px;
+  min-height: 0;
+  padding: 0;
+  line-height: 18px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font-size: 12px;
+  opacity: 0.45;
+}
+.adventurepeak-side-buttons > .adventurepeak-side-button[aria-pressed="true"],
+.adventurepeak-side-buttons > .adventurepeak-side-button:hover,
+.adventurepeak-side-buttons > .adventurepeak-side-button:focus-visible { opacity: 1; }
+.adventurepeak-side-button[data-side="friendly"][aria-pressed="true"] { color: #3c9b68; }
+.adventurepeak-side-button[data-side="hostile"][aria-pressed="true"] { color: #d44b4b; }

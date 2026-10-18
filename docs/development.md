@@ -33,7 +33,8 @@ The first development increment includes:
 - The native long rest Hit Dice calculation configured with the 2014 half-total recovery fraction.
 - Automatic recovery of up to two Pact Magic slots per short rest.
 - Character actors default to friendly and NPC actors to hostile. Explicit GM assignments override these defaults, including during combat and for late joiners.
-- Group headers have a side selector applying to every member. Individual selectors allow exceptions, and visual groups split by side. Side changes before combat invalidate previously calculated totals; changes during combat preserve frozen totals.
+- Group headers have friendly/hostile icon buttons applying to every member. Individual buttons allow exceptions, and visual groups split by side. Side changes before combat invalidate previously calculated totals; changes during combat preserve frozen totals.
+- Individual assignment buttons sit beside the native combatant controls, separated by `|`. The handshake assigns friendly and the skull-and-crossbones assigns hostile; pressed state, tooltips, and accessible labels identify the selection.
 - Tracker totals display rounded whole numbers while initiative calculations retain fractional values from tie-breaker modules.
 - Frozen summed initiative totals, friendly-side tie breaks, and side ordering that preserves individual initiative results.
 - A GM side-swap control. In this build, swaps apply at the next round to avoid reordering an unfinished round. Totals are preserved.
@@ -82,7 +83,7 @@ Manual checks to perform in a separate development world:
 9. Start combat, add/remove combatants, and reroll an individual. Confirm totals and side order remain frozen, with individual rolls visible.
 10. Queue a side swap and advance a round. Check both clients' order, unchanged totals, and individual effects at the boundary. This is especially important because automated substitutes do not reproduce Foundry's private turn-event dispatcher.
 11. Enable both settings and repeat representative rest and combat checks to verify independence.
-12. Add PCs and NPCs without assignments; check friendly/hostile defaults. Group two NPCs with matching initiative, change their header dropdown, and confirm both assignments persist. Change one member separately and confirm the group splits. Repeat during combat and check that original totals stay fixed.
+12. Add PCs and NPCs without assignments; check friendly/hostile defaults. Group two NPCs with matching initiative, click their header assignment buttons, and confirm both assignments persist. Change one member separately and confirm the group splits. Repeat during combat and check that original totals stay fixed.
 13. With fractional initiative rolls, check that the totals display rounded whole numbers while the side with the higher precise total still wins.
 
 The remaining scope above requires additional acceptance checks once implemented. No manual check is recorded as passed yet.

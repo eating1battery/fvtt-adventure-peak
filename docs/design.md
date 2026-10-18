@@ -78,7 +78,8 @@ Status: core rule agreed; details below remain open.
 - The side with the higher total acts first.
 - The DM decides which combatants belong to the friendly side and which belong to the hostile side.
 - PCs (character actors) default to friendly; NPC actors default to hostile. Explicit DM assignments override these defaults, including during combat.
-- Grouped enemies have a group-level side selector that changes every member. Individual members can be assigned separately; the visual grouping separates different sides.
+- Grouped enemies have group-level friendly/hostile buttons that change every member. Individual members can be assigned separately; the visual grouping separates different sides.
+- Side assignment uses two compact icon buttons beside the native `combatant-controls` div, separated from the native controls by `|`. Buttons show the selected side and include accessible labels and tooltips. Group headers also provide assignment buttons.
 - Initiative totals are displayed as rounded whole numbers. Preserve fractional individual rolls and exact stored totals for deciding which side acts first.
 - If the side totals tie, the friendly side acts first.
 - Once initiative is established, side totals and the resulting order stay fixed for the encounter, including when combatants join or leave.
@@ -108,7 +109,7 @@ Confirmed acceptance criteria:
 - The DM can assign combatants to the friendly or hostile side.
 - When friendly and hostile initiative totals are equal, the friendly side acts first.
 - An unassigned PC defaults to friendly and an unassigned NPC defaults to hostile; explicit assignments take priority.
-- A group selector updates every member, and an individual override separates that member into the appropriate visual side group.
+- Group assignment buttons update every member, and an individual override separates that member into the appropriate visual side group.
 - Display rounding does not affect which side wins, even if distinct decimal totals display as the same whole number.
 - Each combatant has a turn-completion control in the tracker.
 - Completing the last unfinished turn on the active side automatically advances combat to the next side, or to the next round after both sides finish.

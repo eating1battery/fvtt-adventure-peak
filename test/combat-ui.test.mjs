@@ -46,13 +46,13 @@ test("visual enemy groups split when members have different sides", () => {
   assert.equal(groups.get("g:adventurepeak:friendly").expanded, true);
 });
 
-test("a grouped dropdown updates all members and does not trigger group collapse", async () => {
+test("group side buttons update all members without collapsing, with individual controls beside native controls", async () => {
   const dom = new JSDOM(`<div id="tracker"><ol><li class="combatant-group">
     <div class="group-header">Enemies</div><div class="collapsible-content"><ol>
-    <li data-combatant-id="a"></li><li data-combatant-id="b"></li>
+    <li data-combatant-id="a"><div class="token-name"><div class="combatant-controls"><button>Native</button></div></div></li><li data-combatant-id="b"><div class="token-name"><div class="combatant-controls"></div></div></li>
     </ol></div></li></ol></div>`);
-  const { document, HTMLElement, Option, Event, MouseEvent } = dom.window;
-  Object.assign(globalThis, { document, HTMLElement, Option });
+  const { document, HTMLElement, MouseEvent } = dom.window;
+  Object.assign(globalThis, { document, HTMLElement });
   const members = [combatant("a", "npc"), combatant("b", "npc")];
   members.get = id => members.find(c => c.id === id);
   let changes = [];
@@ -70,23 +70,34 @@ test("a grouped dropdown updates all members and does not trigger group collapse
   let collapsed = false;
   root.querySelector(".combatant-group").addEventListener("click", () => { collapsed = true; });
   renderSideControls({ viewed: combat }, root);
-  const select = root.querySelector(".group-header select");
-  assert.ok(select);
-  assert.equal(select.disabled, false);
-  assert.equal(select.value, "hostile");
+  const friendly = root.querySelector('.group-header button[data-side="friendly"]');
+  const hostile = root.querySelector('.group-header button[data-side="hostile"]');
+  assert.ok(friendly && hostile);
+  assert.equal(friendly.disabled, false);
+  assert.equal(hostile.getAttribute("aria-pressed"), "true");
+  const native = root.querySelector('[data-combatant-id="a"] .combatant-controls');
+  assert.ok(native.nextElementSibling.matches(".adventurepeak-side-buttons"));
+  assert.equal(native.nextElementSibling.firstElementChild.textContent, "|");
+  assert.equal(native.querySelector("button").textContent, "Native");
   assert.match(root.querySelector(".adventurepeak-sides").textContent, /Friendly 26 · Hostile 27/);
-  select.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+  friendly.dispatchEvent(new MouseEvent("click", { bubbles: true }));
   assert.equal(collapsed, false);
-  select.value = "friendly";
-  select.dispatchEvent(new Event("change", { bubbles: true }));
   await new Promise(resolve => setImmediate(resolve));
   assert.deepEqual(changes.map(c => c._id), ["a", "b"]);
   assert.ok(members.every(c => sideOf(c) === "friendly"));
   assert.equal(state.totals.hostile, 27.2);
   renderSideControls({ viewed: combat }, root);
-  assert.equal(root.querySelectorAll(".group-header select").length, 1);
-  assert.equal(root.querySelector(".group-header select").value, "friendly");
-  assert.equal(root.querySelectorAll("[data-combatant-id] select").length, 2);
+  assert.equal(root.querySelectorAll(".group-header .adventurepeak-side-buttons").length, 1);
+  assert.equal(root.querySelector('.group-header button[data-side="friendly"]').getAttribute("aria-pressed"), "true");
+  assert.equal(root.querySelectorAll("[data-combatant-id] .adventurepeak-side-buttons").length, 2);
+  assert.equal(root.querySelectorAll(".adventurepeak-controls-row").length, 2);
+  assert.equal(root.querySelectorAll("select").length, 0);
+  const individualHostile = root.querySelector('[data-combatant-id="a"] button[data-side="hostile"]');
+  individualHostile.click();
+  await new Promise(resolve => setImmediate(resolve));
+  assert.deepEqual(changes.map(c => c._id), ["a"]);
+  assert.equal(sideOf(members[0]), "hostile");
+  assert.equal(sideOf(members[1]), "friendly");
   dom.window.close();
 });
 
