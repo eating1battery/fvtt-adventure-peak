@@ -1,0 +1,9 @@
+.adventurepeak-rest, .adventurepeak-sides {
+  border: 1px solid var(--color-border-light-primary, #777);
+  border-radius: 4px;
+  margin: 6px 0;
+  padding: 8px;
+}
+.adventurepeak-rest label { display: flex; gap: 8px; align-items: center; }
+.adventurepeak-sides { display: flex; flex-direction: column; gap: 4px; }
+.adventurepeak-side-select { max-width: 95px; font-size: 11px; }
