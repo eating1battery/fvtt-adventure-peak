@@ -134,11 +134,32 @@ function report(error) {
   ui.notifications.error(`Adventurepeak: ${error.message}`);
 }
 
+/** Move native resource/initiative elements intact so their controls keep working. */
+export function layoutCombatant(container) {
+  const name = container.querySelector(":scope > .token-name");
+  if (!name) return;
+  let line = name.querySelector(":scope > .adventurepeak-name-row");
+  if (!line) {
+    const label = name.querySelector(":scope > .name");
+    if (!label) return;
+    line = document.createElement("div");
+    line.className = "adventurepeak-name-row";
+    label.replaceWith(line);
+    line.append(label);
+  }
+  for (const selector of [".token-resource", ".token-initiative"]) {
+    const element = container.querySelector(`:scope > ${selector}`);
+    if (element) line.append(element);
+  }
+  name.classList.add("adventurepeak-combatant-details");
+}
+
 export function renderSideControls(app, html) {
   if (!enabled("sideInitiative") || !app.viewed) return;
   const root = html instanceof HTMLElement ? html : html[0];
   if (!root) return;
   const combat = app.viewed;
+  for (const row of root.querySelectorAll("[data-combatant-id], .group-header")) layoutCombatant(row);
   root.querySelectorAll(".adventurepeak-sides, .adventurepeak-side-select, .adventurepeak-side-buttons")
     .forEach(el => el.remove());
   root.querySelectorAll(".adventurepeak-controls-row").forEach(el => el.replaceWith(...el.childNodes));

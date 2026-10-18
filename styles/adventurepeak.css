@@ -6,6 +6,39 @@
 }
 .adventurepeak-rest label { display: flex; gap: 8px; align-items: center; }
 .adventurepeak-sides { display: flex; flex-direction: column; gap: 4px; }
+.combat-sidebar .combat-tracker .adventurepeak-combatant-details { min-width: 0; }
+.combat-sidebar .combat-tracker .adventurepeak-name-row {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+.combat-sidebar .combat-tracker .adventurepeak-name-row > .name {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.combat-sidebar .combat-tracker .adventurepeak-name-row > .token-resource,
+.combat-sidebar .combat-tracker .adventurepeak-name-row > .token-initiative {
+  flex: 0 0 auto;
+  align-self: center;
+  min-width: 24px;
+  height: 20px;
+  line-height: 20px;
+  text-align: center;
+}
+.combat-sidebar .combat-tracker .adventurepeak-name-row .token-initiative input,
+.combat-sidebar .combat-tracker .adventurepeak-name-row .token-initiative button {
+  height: 20px;
+  line-height: 20px;
+}
+.combat-sidebar .combat-tracker .adventurepeak-name-row > .token-initiative {
+  flex: 0 0 32px;
+  width: 32px;
+}
 .combat-sidebar .combat-tracker .adventurepeak-controls-row {
   display: flex;
   flex-flow: row nowrap;

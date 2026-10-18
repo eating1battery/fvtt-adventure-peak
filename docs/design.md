@@ -80,6 +80,7 @@ Status: core rule agreed; details below remain open.
 - PCs (character actors) default to friendly; NPC actors default to hostile. Explicit DM assignments override these defaults, including during combat.
 - Grouped enemies have group-level friendly/hostile buttons that change every member. Individual members can be assigned separately; the visual grouping separates different sides.
 - Side assignment uses two compact icon buttons beside the native `combatant-controls` div, separated from the native controls by `|`. Buttons show the selected side and include accessible labels and tooltips. Group headers also provide assignment buttons.
+- The combatant name, HP/resource display, and initiative share the top row. Native controls and friendly/hostile assignment buttons sit beneath it.
 - Initiative averages are displayed as rounded whole numbers. Preserve fractional individual rolls and precise stored averages for deciding which side acts first.
 - If the side averages tie, the friendly side acts first.
 - Once initiative is established, side averages and the resulting order stay fixed for the encounter, including when combatants join or leave.

@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { JSDOM } from "jsdom";
-import { renderSideControls, sideOf, createCombatClass, assignSide, formatTotal }
+import { renderSideControls, sideOf, createCombatClass, assignSide, formatTotal, layoutCombatant }
   from "../scripts/integrations/combat.mjs";
 import { calculateSides } from "../scripts/rules/initiative.mjs";
 
@@ -113,4 +113,27 @@ test("pre-combat side changes invalidate stale totals; players cannot assign sid
   game.user.isGM = false;
   try { await assert.rejects(() => assignSide(combat, [], "friendly"), /Only the DM/); }
   finally { game.user.isGM = true; }
+});
+
+
+test("HP and initiative share the name row, preserving native nodes and events", () => {
+  const dom = new JSDOM(`<li><div class="token-name"><strong class="name">Hero</strong><div class="combatant-controls"></div></div><div class="token-resource">42</div><div class="token-initiative"><input value="18"></div></li>`);
+  const { document } = dom.window;
+  globalThis.document = document;
+  const row = document.querySelector("li");
+  const input = row.querySelector("input");
+  const resource = row.querySelector(".token-resource");
+  let changed = false;
+  input.addEventListener("change", () => { changed = true; });
+  layoutCombatant(row);
+  const line = row.querySelector(".adventurepeak-name-row");
+  assert.deepEqual(Array.from(line.children, el => el.className), ["name", "token-resource", "token-initiative"]);
+  assert.equal(line.querySelector("input"), input);
+  assert.equal(line.querySelector(".token-resource"), resource);
+  assert.ok(line.nextElementSibling.matches(".combatant-controls"));
+  input.dispatchEvent(new dom.window.Event("change"));
+  assert.equal(changed, true);
+  layoutCombatant(row);
+  assert.equal(row.querySelectorAll(".adventurepeak-name-row").length, 1);
+  dom.window.close();
 });
