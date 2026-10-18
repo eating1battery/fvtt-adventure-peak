@@ -91,3 +91,18 @@ test("players cannot freeze totals or swap side order", async () => {
     await assert.rejects(() => makeCombat().swapSideOrder(), /Only the DM/);
   } finally { game.user.isGM = true; }
 });
+
+test("an existing sum-based encounter can convert once without changing the active creature", async () => {
+  const combat = makeCombat();
+  combat.flags.initiative = { totals: { friendly: 25, hostile: 27 }, order: ["hostile", "friendly"] };
+  combat.round = 1;
+  combat.turn = 1;
+  combat.setupTurns();
+  Object.defineProperty(combat, "combatant", { get() { return this.turns[this.turn]; } });
+  const active = combat.combatant.id;
+  await combat.establishSides();
+  assert.deepEqual(combat.flags.initiative.averages, { friendly: 12.5, hostile: 13.5 });
+  assert.equal(combat.combatant.id, active);
+  assert.equal(combat.lastUpdate.options.turnEvents, false);
+  await assert.rejects(() => combat.establishSides(), /fixed/);
+});

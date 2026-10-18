@@ -33,11 +33,11 @@ The first development increment includes:
 - The native long rest Hit Dice calculation configured with the 2014 half-total recovery fraction.
 - Automatic recovery of up to two Pact Magic slots per short rest.
 - Character actors default to friendly and NPC actors to hostile. Explicit GM assignments override these defaults, including during combat and for late joiners.
-- Group headers have friendly/hostile icon buttons applying to every member. Individual buttons allow exceptions, and visual groups split by side. Side changes before combat invalidate previously calculated totals; changes during combat preserve frozen totals.
+- Group headers have friendly/hostile icon buttons applying to every member. Individual buttons allow exceptions, and visual groups split by side. Side changes before combat invalidate previously calculated averages; changes during combat preserve frozen averages.
 - Individual assignment buttons sit beside the native combatant controls, separated by `|`. The handshake assigns friendly and the skull-and-crossbones assigns hostile; pressed state, tooltips, and accessible labels identify the selection.
-- Tracker totals display rounded whole numbers while initiative calculations retain fractional values from tie-breaker modules.
-- Frozen summed initiative totals, friendly-side tie breaks, and side ordering that preserves individual initiative results.
-- A GM side-swap control. In this build, swaps apply at the next round to avoid reordering an unfinished round. Totals are preserved.
+- Tracker averages display rounded whole numbers while initiative calculations retain fractional values from tie-breaker modules.
+- Frozen per-combatant initiative averages, friendly-side tie breaks, and side ordering that preserves individual initiative results.
+- A GM side-swap control. In this build, swaps apply at the next round to avoid reordering an unfinished round. Averages are preserved.
 - An API at `game.modules.get("adventurepeak").api` with `establishSides(combat)` and `swapSideOrder(combat)`. Both require side initiative to be enabled and a GM caller.
 
 The module does not change the Arcane Recovery feature. Slot recovery reads current slot values, so recovery already performed through Arcane Recovery is accounted for when a Hit Die is spent.
@@ -79,11 +79,15 @@ Manual checks to perform in a separate development world:
 5. Use Arcane Recovery first, then spend Hit Dice. Confirm the already-restored slots are not counted as missing.
 6. Complete short rests with a warlock missing four, one, and zero Pact Magic slots. Confirm recovery of two, one, and zero respectively.
 7. Attempt an unrequested long rest as a player, then a targeted GM-requested long rest and a GM-initiated long rest. Check authorization, healing, absence of slot refill, and 2014 Hit Dice recovery, including level one and multiclass actors.
-8. Enable only side initiative. Assign sides, roll all combatants, and calculate totals. Check the 25-versus-27 example, ties, missing assignments, and unrolled combatants.
-9. Start combat, add/remove combatants, and reroll an individual. Confirm totals and side order remain frozen, with individual rolls visible.
-10. Queue a side swap and advance a round. Check both clients' order, unchanged totals, and individual effects at the boundary. This is especially important because automated substitutes do not reproduce Foundry's private turn-event dispatcher.
+8. Enable only side initiative. Assign sides, roll all combatants, and calculate averages. Check the 12.5-versus-13.5 average example, ties, missing assignments, and unrolled combatants.
+9. Start combat, add/remove combatants, and reroll an individual. Confirm averages and side order remain frozen, with individual rolls visible.
+10. Queue a side swap and advance a round. Check both clients' order, unchanged averages, and individual effects at the boundary. This is especially important because automated substitutes do not reproduce Foundry's private turn-event dispatcher.
 11. Enable both settings and repeat representative rest and combat checks to verify independence.
-12. Add PCs and NPCs without assignments; check friendly/hostile defaults. Group two NPCs with matching initiative, click their header assignment buttons, and confirm both assignments persist. Change one member separately and confirm the group splits. Repeat during combat and check that original totals stay fixed.
-13. With fractional initiative rolls, check that the totals display rounded whole numbers while the side with the higher precise total still wins.
+12. Add PCs and NPCs without assignments; check friendly/hostile defaults. Group two NPCs with matching initiative, click their header assignment buttons, and confirm both assignments persist. Change one member separately and confirm the group splits. Repeat during combat and check that original averages stay fixed.
+13. With fractional initiative rolls, check that the averages display rounded whole numbers while the side with the higher precise average still wins.
 
 The remaining scope above requires additional acceptance checks once implemented. No manual check is recorded as passed yet.
+
+Existing sum-based encounters show **Recalculate using averages**. The GM can use this once to establish averages from current combatants and their rolls, including in an already-started encounter. This conversion preserves the current combatant and suppresses turn events. Subsequent averages remain fixed for the encounter.
+
+The compact controls were checked in headless Chromium using the installed Foundry and dnd5e stylesheets: native controls, separator, and both side buttons stayed on one row at tracker widths of 300, 250, and 200 pixels. Module CSS explicitly sets horizontal, non-wrapping flex layout and fixed icon widths.

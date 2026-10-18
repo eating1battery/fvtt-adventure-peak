@@ -45,11 +45,12 @@ test("Pact Magic recovers two automatically and never exceeds capacity", () => {
     ["system.spells.pact.value"], 4);
 });
 
-test("initiative uses sums rather than averages or highest rolls", () => {
+test("initiative compares per-combatant averages", () => {
   assert.deepEqual(calculateSides([
     { side: "friendly", initiative: 18 }, { side: "friendly", initiative: 7 },
     { side: "hostile", initiative: 14 }, { side: "hostile", initiative: 13 }
-  ]), { totals: { friendly: 25, hostile: 27 }, order: ["hostile", "friendly"] });
+  ]), { method: "average", totals: { friendly: 25, hostile: 27 }, counts: { friendly: 2, hostile: 2 },
+    averages: { friendly: 12.5, hostile: 13.5 }, order: ["hostile", "friendly"] });
 });
 
 test("friendly wins ties, including negative initiative results", () => {
@@ -62,4 +63,20 @@ test("missing assignments or unrolled combatants prevent freezing totals", () =>
   assert.throws(() => calculateSides([]), /Add combatants/);
   assert.throws(() => calculateSides([{ initiative: 10 }]), /assign/);
   assert.throws(() => calculateSides([{ side: "friendly", initiative: null }]), /roll/);
+});
+
+
+test("a larger side does not win just because its sum is higher", () => {
+  const state = calculateSides([
+    { side: "friendly", initiative: 18 },
+    { side: "hostile", initiative: 10 }, { side: "hostile", initiative: 10 }
+  ]);
+  assert.deepEqual(state.averages, { friendly: 18, hostile: 10 });
+  assert.deepEqual(state.order, ["friendly", "hostile"]);
+});
+
+test("an empty side has no average and cannot beat a populated side", () => {
+  const state = calculateSides([{ side: "hostile", initiative: -2 }]);
+  assert.equal(state.averages.friendly, null);
+  assert.deepEqual(state.order, ["hostile", "friendly"]);
 });

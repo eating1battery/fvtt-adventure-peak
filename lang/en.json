@@ -7,7 +7,7 @@
       },
       "sideInitiative": {
         "Name": "Enable Side Initiative",
-        "Hint": "Use DM-assigned sides and fixed summed initiative totals. Reload required."
+        "Hint": "Use DM-assigned sides and fixed average initiative. Reload required."
       }
     }
   }

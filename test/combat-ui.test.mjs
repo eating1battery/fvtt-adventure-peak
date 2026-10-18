@@ -21,14 +21,14 @@ test("characters default friendly, NPCs hostile, and DM overrides take priority"
   assert.equal(sideOf(combatant("vehicle", "vehicle")), undefined);
 });
 
-test("fractional totals decide the winner while the displayed sums use whole numbers", () => {
+test("fractional averages decide the winner while the display uses whole numbers", () => {
   const state = calculateSides([
     { side: "friendly", initiative: 10.1 }, { side: "hostile", initiative: 10.2 }
   ]);
   assert.deepEqual(state.order, ["hostile", "friendly"]);
-  assert.equal(state.totals.friendly, 10.1);
-  assert.equal(formatTotal(state.totals.friendly), "10");
-  assert.equal(formatTotal(state.totals.hostile), "10");
+  assert.equal(state.averages.friendly, 10.1);
+  assert.equal(formatTotal(state.averages.friendly), "10");
+  assert.equal(formatTotal(state.averages.hostile), "10");
   assert.equal(formatTotal(25.8), "26");
 });
 
@@ -56,7 +56,7 @@ test("group side buttons update all members without collapsing, with individual 
   const members = [combatant("a", "npc"), combatant("b", "npc")];
   members.get = id => members.find(c => c.id === id);
   let changes = [];
-  const state = { totals: { friendly: 25.8, hostile: 27.2 }, order: ["hostile", "friendly"] };
+  const state = { method: "average", averages: { friendly: 25.8, hostile: 27.2 }, order: ["hostile", "friendly"] };
   const combat = {
     combatants: members, started: true, getFlag: () => state,
     async updateEmbeddedDocuments(type, updates, options) {
@@ -85,7 +85,7 @@ test("group side buttons update all members without collapsing, with individual 
   await new Promise(resolve => setImmediate(resolve));
   assert.deepEqual(changes.map(c => c._id), ["a", "b"]);
   assert.ok(members.every(c => sideOf(c) === "friendly"));
-  assert.equal(state.totals.hostile, 27.2);
+  assert.equal(state.averages.hostile, 27.2);
   renderSideControls({ viewed: combat }, root);
   assert.equal(root.querySelectorAll(".group-header .adventurepeak-side-buttons").length, 1);
   assert.equal(root.querySelector('.group-header button[data-side="friendly"]').getAttribute("aria-pressed"), "true");

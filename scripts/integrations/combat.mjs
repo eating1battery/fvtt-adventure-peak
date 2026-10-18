@@ -53,11 +53,20 @@ export function createCombatClass(BaseCombat) {
 
     async establishSides() {
       if (!enabled("sideInitiative") || !game.user.isGM) throw new Error("Only the DM can establish side initiative.");
-      if (this.started) throw new Error("Side totals are fixed once combat starts.");
+      const previous = this.getFlag(MODULE_ID, "initiative");
+      if (this.started && (!previous || previous.method === "average")) {
+        throw new Error("Side averages are fixed once combat starts.");
+      }
       const state = calculateSides(this.combatants.contents.map(c => ({
         side: sideOf(c), initiative: c.initiative
       })));
-      await this.setFlag(MODULE_ID, "initiative", state);
+      if (this.started) {
+        // Explicitly converting an old sum-based encounter establishes a new snapshot.
+        // Preserve the current creature and avoid replaying individual turn events.
+        const turns = [...this.turns].sort((a, b) => compareSides({ side: sideOf(a) }, { side: sideOf(b) }, state.order));
+        const turn = this.turn === null ? null : turns.findIndex(c => c.id === this.combatant?.id);
+        await this.update({ [`flags.${MODULE_ID}.initiative`]: state, turn: turn < 0 ? 0 : turn }, { turnEvents: false });
+      } else await this.setFlag(MODULE_ID, "initiative", state);
       this.setupTurns();
       ui.combat.render();
       return state;
@@ -66,7 +75,7 @@ export function createCombatClass(BaseCombat) {
     async startCombat() {
       if (enabled("sideInitiative")) {
         if (!game.user.isGM) throw new Error("Only the DM can start side initiative combat.");
-        if (!this.getFlag(MODULE_ID, "initiative")) await this.establishSides();
+        if (this.getFlag(MODULE_ID, "initiative")?.method !== "average") await this.establishSides();
         // A snapshot may have been prepared before the start button was pressed.
         // Recheck assignments/rolls, but preserve its totals and any explicit swap.
         calculateSides(this.combatants.contents.map(c => ({ side: sideOf(c), initiative: c.initiative })));
@@ -140,17 +149,20 @@ export function renderSideControls(app, html) {
   // Totals can reveal hidden enemies; retain hidden information for the DM only.
   summary.textContent = state
     ? game.user.isGM
-      ? `Friendly ${formatTotal(state.totals.friendly)} · Hostile ${formatTotal(state.totals.hostile)} · ${state.order[0]} first`
+      ? state.method === "average"
+        ? `Average initiative: Friendly ${state.averages.friendly === null ? "—" : formatTotal(state.averages.friendly)} · Hostile ${state.averages.hostile === null ? "—" : formatTotal(state.averages.hostile)} · ${state.order[0]} first`
+        : "Previous sum-based initiative: recalculate using averages"
       : `${state.order[0]} side acts first`
     : "Side initiative: awaiting DM assignments and rolls";
   panel.append(summary);
   if (game.user.isGM) {
     const button = document.createElement("button");
     button.type = "button";
-    button.textContent = combat.started ? "Swap sides next round" : "Calculate side initiative";
+    const legacy = state && state.method !== "average";
+    button.textContent = legacy ? "Recalculate using averages" : combat.started ? "Swap sides next round" : "Calculate side averages";
     button.addEventListener("click", () => {
       button.disabled = true;
-      Promise.resolve(combat.started ? combat.swapSideOrder() : combat.establishSides())
+      Promise.resolve(combat.started && !legacy ? combat.swapSideOrder() : combat.establishSides())
         .catch(report).finally(() => { button.disabled = false; });
     });
     panel.append(button);

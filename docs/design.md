@@ -74,16 +74,16 @@ Further acceptance criteria will be added as the remaining details are settled.
 Status: core rule agreed; details below remain open.
 
 - All combatants roll initiative individually.
-- Add the individual initiative results for each side to produce that side's total.
-- The side with the higher total acts first.
+- Calculate each side's average initiative: sum every member's individual result and divide by the number of combatants on that side. Visual groups do not change the weighting.
+- The side with the higher average acts first.
 - The DM decides which combatants belong to the friendly side and which belong to the hostile side.
 - PCs (character actors) default to friendly; NPC actors default to hostile. Explicit DM assignments override these defaults, including during combat.
 - Grouped enemies have group-level friendly/hostile buttons that change every member. Individual members can be assigned separately; the visual grouping separates different sides.
 - Side assignment uses two compact icon buttons beside the native `combatant-controls` div, separated from the native controls by `|`. Buttons show the selected side and include accessible labels and tooltips. Group headers also provide assignment buttons.
-- Initiative totals are displayed as rounded whole numbers. Preserve fractional individual rolls and exact stored totals for deciding which side acts first.
-- If the side totals tie, the friendly side acts first.
-- Once initiative is established, side totals and the resulting order stay fixed for the encounter, including when combatants join or leave.
-- The DM may swap the side order when needed, overriding which side acts first without changing the recorded initiative rolls or totals.
+- Initiative averages are displayed as rounded whole numbers. Preserve fractional individual rolls and precise stored averages for deciding which side acts first.
+- If the side averages tie, the friendly side acts first.
+- Once initiative is established, side averages and the resulting order stay fixed for the encounter, including when combatants join or leave.
+- The DM may swap the side order when needed, overriding which side acts first without changing the recorded initiative rolls or averages.
 - Members of the active side may take their turns more or less simultaneously; individual initiative results do not impose a strict turn order within the side.
 - Preserve and display individual initiative results because they remain useful information.
 - Each combatant can mark their own turn complete in the combat tracker.
@@ -99,23 +99,24 @@ Details to resolve:
 - How a DM-initiated side-order swap takes effect during an in-progress round.
 - When completion markers reset and how the DM corrects an accidental completion or advancement.
 - How Foundry's default turn controls integrate with side completion tracking, concurrent acting, turn-based durations, and DM overrides while preserving individual start/end triggers.
-- Desired display of side totals and individual rolls.
+- Desired display of side averages and individual rolls.
 
 Confirmed acceptance criteria:
 
 - Each combatant retains a visible individual initiative result.
-- For sides with rolls of 18 and 7 versus 14 and 13, the side totaling 27 acts before the side totaling 25.
+- For sides with rolls of 18 and 7 versus 14 and 13, the side averaging 13.5 acts before the side averaging 12.5.
+- One friendly combatant rolling 18 acts before two hostile combatants rolling 10 each: compare averages of 18 and 10.
 - Members of the active side can act without following descending individual initiative order.
 - The DM can assign combatants to the friendly or hostile side.
-- When friendly and hostile initiative totals are equal, the friendly side acts first.
+- When friendly and hostile initiative averages are equal, the friendly side acts first.
 - An unassigned PC defaults to friendly and an unassigned NPC defaults to hostile; explicit assignments take priority.
 - Group assignment buttons update every member, and an individual override separates that member into the appropriate visual side group.
-- Display rounding does not affect which side wins, even if distinct decimal totals display as the same whole number.
+- Display rounding does not affect which side wins, even if distinct decimal averages display as the same whole number.
 - Each combatant has a turn-completion control in the tracker.
 - Completing the last unfinished turn on the active side automatically advances combat to the next side, or to the next round after both sides finish.
 - The DM can advance combat even if some members of the active side have not marked their turns complete.
-- Combatants joining or leaving do not change the established side totals or order.
-- The DM can swap the established side order while preserving individual initiative results and side totals.
+- Combatants joining or leaving do not change the established side averages or order.
+- The DM can swap the established side order while preserving individual initiative results and side averages.
 - A creature's turn-start effects trigger when its individual turn starts; its turn-end effects trigger when its individual turn completes.
 - Starting or ending a side's shared turn does not, by itself, trigger every member's individual turn-start or turn-end effects.
 
@@ -144,7 +145,7 @@ The initial scope consists of the two features above:
 - The settings are independent: either feature, both features, or neither feature can be enabled.
 - Disabling a feature restores the base system's behavior for that feature; enabling the other feature does not activate it indirectly.
 - The rest rules setting controls the complete rest feature, including Hit Die slot recovery, Song of Rest changes, Pact Magic recovery, and DM-authorized long rests.
-- The side initiative setting controls the complete combat feature, including side assignment, totals, ordering, completion, and DM overrides.
+- The side initiative setting controls the complete combat feature, including side assignment, averages, ordering, completion, and DM overrides.
 - The in-rest automatic slot recovery checkbox remains a separate player choice within the enabled rest feature.
 - Development defaults: both settings disabled, with a reload required on change. These defaults are provisional pending user preference; the rest dialog's automatic slot recovery checkbox remains checked by default when rest rules are enabled.
 
