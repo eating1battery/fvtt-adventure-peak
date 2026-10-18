@@ -155,9 +155,10 @@ export function layoutCombatant(container) {
 }
 
 export function renderSideControls(app, html) {
-  if (!enabled("sideInitiative") || !app.viewed) return;
   const root = html instanceof HTMLElement ? html : html[0];
   if (!root) return;
+  root.querySelectorAll(".adventurepeak-sides").forEach(el => el.remove());
+  if (!enabled("sideInitiative") || !app.viewed) return;
   const combat = app.viewed;
   for (const row of root.querySelectorAll("[data-combatant-id], .group-header")) layoutCombatant(row);
   root.querySelectorAll(".adventurepeak-sides, .adventurepeak-side-select, .adventurepeak-side-buttons")
@@ -166,14 +167,15 @@ export function renderSideControls(app, html) {
   const panel = document.createElement("div");
   panel.className = "adventurepeak-sides";
   const state = combat.getFlag(MODULE_ID, "initiative");
+  const firstLabel = state?.order[0] === "friendly" ? "Friendly First" : "Hostile First";
   const summary = document.createElement("span");
   // Totals can reveal hidden enemies; retain hidden information for the DM only.
   summary.textContent = state
     ? game.user.isGM
       ? state.method === "average"
-        ? `Average initiative: Friendly ${state.averages.friendly === null ? "—" : formatTotal(state.averages.friendly)} · Hostile ${state.averages.hostile === null ? "—" : formatTotal(state.averages.hostile)} · ${state.order[0]} first`
+        ? `Average initiative: Friendly ${state.averages.friendly === null ? "—" : formatTotal(state.averages.friendly)} · Hostile ${state.averages.hostile === null ? "—" : formatTotal(state.averages.hostile)} · ${firstLabel}`
         : "Previous sum-based initiative: recalculate using averages"
-      : `${state.order[0]} side acts first`
+      : firstLabel
     : "Side initiative: awaiting DM assignments and rolls";
   panel.append(summary);
   if (game.user.isGM) {
@@ -248,7 +250,7 @@ export function renderSideControls(app, html) {
       if (header && members.length) addButtons(header, members, "this entire group");
     }
   }
-  root.prepend(panel);
+  if (combat.active) root.prepend(panel);
 }
 
 export function registerCombatHooks() {

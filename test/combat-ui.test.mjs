@@ -58,7 +58,7 @@ test("group side buttons update all members without collapsing, with individual 
   let changes = [];
   const state = { method: "average", averages: { friendly: 25.8, hostile: 27.2 }, order: ["hostile", "friendly"] };
   const combat = {
-    combatants: members, started: true, getFlag: () => state,
+    combatants: members, active: true, started: true, getFlag: () => state,
     async updateEmbeddedDocuments(type, updates, options) {
       changes = updates;
       assert.equal(type, "Combatant");
@@ -80,6 +80,7 @@ test("group side buttons update all members without collapsing, with individual 
   assert.equal(native.nextElementSibling.firstElementChild.textContent, "|");
   assert.equal(native.querySelector("button").textContent, "Native");
   assert.match(root.querySelector(".adventurepeak-sides").textContent, /Friendly 26 · Hostile 27/);
+  assert.match(root.querySelector(".adventurepeak-sides").textContent, /Hostile First/);
   friendly.dispatchEvent(new MouseEvent("click", { bubbles: true }));
   assert.equal(collapsed, false);
   await new Promise(resolve => setImmediate(resolve));
@@ -135,5 +136,24 @@ test("HP and initiative share the name row, preserving native nodes and events",
   assert.equal(changed, true);
   layoutCombatant(row);
   assert.equal(row.querySelectorAll(".adventurepeak-name-row").length, 1);
+  dom.window.close();
+});
+
+test("side summary requires an active encounter, clears when combat ends, and title-cases the winner", () => {
+  const dom = new JSDOM('<div id="tracker"><div class="adventurepeak-sides">Stale</div></div>');
+  Object.assign(globalThis, { document: dom.window.document, HTMLElement: dom.window.HTMLElement });
+  const root = document.querySelector('#tracker');
+  renderSideControls({ viewed: null }, root);
+  assert.equal(root.querySelector('.adventurepeak-sides'), null);
+  const state = { method: 'average', averages: { friendly: 18, hostile: 12 }, order: ['friendly', 'hostile'] };
+  const combat = { active: false, started: false, combatants: [], getFlag: () => state };
+  renderSideControls({ viewed: combat }, root);
+  assert.equal(root.querySelector('.adventurepeak-sides'), null);
+  combat.active = true;
+  renderSideControls({ viewed: combat }, root);
+  assert.match(root.querySelector('.adventurepeak-sides').textContent, /Friendly First/);
+  combat.active = false;
+  renderSideControls({ viewed: combat }, root);
+  assert.equal(root.querySelector('.adventurepeak-sides'), null);
   dom.window.close();
 });
