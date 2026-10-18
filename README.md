@@ -15,6 +15,8 @@ npm test
 npm run check
 ```
 
-To load in a development Foundry installation, copy this directory into `Data/modules/adventurepeak`, restart Foundry, and enable Adventurepeak in the test world's module management. Enable the desired rules in module settings and reload. This repository has not been installed into the existing campaign.
+The module is installed in this development LXC at `/opt/foundrydata/Data/modules/adventurepeak`. The source repository remains at `/root/adventurepeak`. See [development notes](docs/development.md#local-installation) for syncing code changes.
+
+In Foundry, enable Adventurepeak in **Manage Modules**, then enable the desired rules in module settings and reload. Installing the files does not activate the module in a world.
 
 This is an incomplete development version: Song of Rest sequence tracking and independent combatant completion remain to be implemented. Foundry's native turn controls currently track turns within each ordered side. In-world validation is pending.

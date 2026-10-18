@@ -1,5 +1,25 @@
 # Development notes
 
+## Local installation
+
+This LXC container is an internal development copy. Adventurepeak is installed at `/opt/foundrydata/Data/modules/adventurepeak`, with Foundry running through `foundry.service`. The source repository is `/root/adventurepeak`; installation uses a copy because the `foundry` user cannot traverse `/root`.
+
+To sync subsequent changes from the repository:
+
+```sh
+rsync -a --chown=foundry:foundry --chmod=D755,F644 \
+  --include='/module.json' \
+  --include='/scripts/' --include='/scripts/***' \
+  --include='/styles/' --include='/styles/***' \
+  --include='/lang/' --include='/lang/***' \
+  --exclude='*' \
+  /root/adventurepeak/ /opt/foundrydata/Data/modules/adventurepeak/
+```
+
+Reload the browser after code changes. Restart `foundry.service` after manifest changes so Foundry reloads package metadata. Enable the module in **Manage Modules** for the world, then enable the desired independent rule settings.
+
+Installation verification: the Foundry service restarted successfully, `/api/status` reported the active `adventure-peak` world on Foundry 13.351/dnd5e 5.3.0, and the installed module manifest was served successfully over HTTP. Module activation and browser-side validation are separate steps.
+
 ## Current implementation
 
 The first development increment includes:
