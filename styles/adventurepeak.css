@@ -34,7 +34,7 @@
   display: inline-flex;
   flex-flow: row nowrap;
   align-items: center;
-  gap: 2px;
+  gap: 6px;
   flex: 0 0 auto;
   width: max-content;
   white-space: nowrap;
@@ -64,8 +64,15 @@
   font-size: 12px;
   opacity: 0.45;
 }
-.adventurepeak-side-buttons > .adventurepeak-side-button[aria-pressed="true"],
-.adventurepeak-side-buttons > .adventurepeak-side-button:hover,
-.adventurepeak-side-buttons > .adventurepeak-side-button:focus-visible { opacity: 1; }
-.adventurepeak-side-button[data-side="friendly"][aria-pressed="true"] { color: #3c9b68; }
-.adventurepeak-side-button[data-side="hostile"][aria-pressed="true"] { color: #d44b4b; }
+.combat-sidebar .combat-tracker .adventurepeak-side-buttons > .adventurepeak-side-button[aria-pressed="true"],
+.combat-sidebar .combat-tracker .adventurepeak-side-buttons > .adventurepeak-side-button:hover,
+.combat-sidebar .combat-tracker .adventurepeak-side-buttons > .adventurepeak-side-button:focus-visible { opacity: 1; }
+.combat-sidebar .combat-tracker .adventurepeak-side-buttons > .adventurepeak-side-button[data-side="friendly"][aria-pressed="true"] {
+  --button-text-color: #3c9b68;
+  color: #3c9b68;
+}
+.combat-sidebar .combat-tracker .adventurepeak-side-buttons > .adventurepeak-side-button[data-side="hostile"][aria-pressed="true"] {
+  --button-text-color: #d44b4b;
+  color: #d44b4b;
+}
+.combat-sidebar .combat-tracker .adventurepeak-side-button > i { color: inherit; }

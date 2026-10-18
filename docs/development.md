@@ -91,3 +91,5 @@ The remaining scope above requires additional acceptance checks once implemented
 Existing sum-based encounters show **Recalculate using averages**. The GM can use this once to establish averages from current combatants and their rolls, including in an already-started encounter. This conversion preserves the current combatant and suppresses turn events. Subsequent averages remain fixed for the encounter.
 
 The compact controls were checked in headless Chromium using the installed Foundry and dnd5e stylesheets: native controls, separator, and both side buttons stayed on one row at tracker widths of 300, 250, and 200 pixels. Module CSS explicitly sets horizontal, non-wrapping flex layout and fixed icon widths.
+
+Selected side icons use full-opacity green for friendly and red for hostile; inactive icons remain subdued. The assignment controls use 6px spacing. Chromium checks verified the computed icon colors, opacity, spacing, and single-row layout against the installed stylesheets.
