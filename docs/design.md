@@ -34,6 +34,7 @@ Status: core rule agreed; details below remain open.
 - Rules baseline: table-specific rest rule, explicitly incorporating 2014 Song of Rest.
 - Short rests occur in one-hour intervals.
 - A long rest occurs only when the DM allows it; reaching or exceeding eight hours does not automatically grant a long rest.
+- Players may initiate long rests themselves. Without a targeted DM request, show a reminder to obtain DM permission and allow the rest to continue; the module does not block it.
 - Long rests otherwise broadly follow normal 5e behavior, subject to the spell slot recovery exception above. Any remaining baseline differences will be specified when needed.
 - Healing works normally: spending Hit Dice retains its normal healing benefit, and Song of Rest provides both its healing benefit and two recovered spell slots.
 - Players may spend Hit Dice to recover spell slots even at full HP; missing HP is not a requirement for spending a Hit Die this way.

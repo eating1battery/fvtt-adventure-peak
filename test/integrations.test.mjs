@@ -66,26 +66,33 @@ test("Hit Dice outside a rest do not recover slots", () => {
   assert.deepEqual(updates.actor, {});
 });
 
-test("long rests require a DM or an existing DM-authored request; recover half Hit Dice", () => {
+test("player long rests warn without blocking and retain half Hit Dice recovery", () => {
   settings.restRules = true;
   game.user.isGM = false;
-  assert.equal(prepareLongRest(actor(), {}), false);
-  assert.equal(prepareLongRest(actor(), { request: { id: "fake", author: { isGM: true } } }), false);
+  const warnings = [];
+  ui.notifications.warn = message => warnings.push(message);
+  const config = { maxHitDice: 20 };
+  assert.equal(prepareLongRest(actor(), config), undefined);
+  assert.equal(warnings.length, 1);
+  assert.match(warnings[0], /DM's permission/);
+  assert.equal(config.fraction, 0.5);
+  assert.equal(config.maxHitDice, undefined);
   const request = { id: "real", author: { isGM: true }, system: {
     handler: "rest", data: { type: "long" }, targets: [{ actor: "Actor.test", result: null }]
   } };
   game.messages.set(request.id, request);
-  const config = { request, maxHitDice: 20 };
-  assert.equal(prepareLongRest(actor(), config), undefined);
-  assert.equal(config.fraction, 0.5);
-  assert.equal(config.maxHitDice, undefined);
-  request.system.data.type = "short";
-  assert.equal(prepareLongRest(actor(), { request }), false);
-  request.system.data.type = "long";
-  request.system.targets[0].result = { id: "already-completed" };
-  assert.equal(prepareLongRest(actor(), { request }), false);
+  prepareLongRest(actor(), { request });
+  assert.equal(warnings.length, 1);
   game.user.isGM = true;
-  assert.equal(prepareLongRest(actor(), {}), undefined);
+  prepareLongRest(actor(), {});
+  assert.equal(warnings.length, 1);
+  settings.restRules = false;
+  game.user.isGM = false;
+  const native = {};
+  prepareLongRest(actor(), native);
+  assert.deepEqual(native, {});
+  assert.equal(warnings.length, 1);
+  game.user.isGM = true;
 });
 
 test("disabled rest rules leave native rest updates untouched", () => {

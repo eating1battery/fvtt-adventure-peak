@@ -18,8 +18,7 @@ export function prepareLongRest(actor, config) {
     && request.system?.handler === "rest" && request.system.data?.type === "long"
     && request.system.targets?.some(target => target.actor === actor.uuid && !target.result);
   if (!game.user.isGM && !gmRequest) {
-    ui.notifications.warn("Adventurepeak: the DM must authorize a long rest. Ask the DM to initiate or request it.");
-    return false;
+    ui.notifications.warn("Adventurepeak: long rests require the DM's permission. Proceed only if the DM has allowed this rest.");
   }
   // Use the system's existing recovery calculation with the 2014 fraction.
   config.fraction = 0.5;

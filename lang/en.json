@@ -3,7 +3,7 @@
     "Settings": {
       "restRules": {
         "Name": "Enable Rest Rules",
-        "Hint": "Recover two spell slots per Hit Die, modify Song of Rest and Pact Magic recovery, and require DM-authorized long rests. Reload required."
+        "Hint": "Recover two spell slots per Hit Die, modify Song of Rest and Pact Magic recovery, and remind players to obtain DM permission for long rests. Reload required."
       },
       "sideInitiative": {
         "Name": "Enable Side Initiative",
