@@ -8,9 +8,10 @@ Two independent world settings control rest rules and side initiative. Both curr
 
 ## Development
 
-Requires Node.js 20 or later. No dependencies or build step are needed.
+Requires Node.js 20 or later. The Foundry module has no runtime dependencies or build step. Install development dependencies to run the DOM regression tests.
 
 ```sh
+npm ci
 npm test
 npm run check
 ```

@@ -1,11 +1,47 @@
 import { enabled, MODULE_ID } from "../settings.mjs";
 import { calculateSides, compareSides, SIDES } from "../rules/initiative.mjs";
 
-const sideOf = combatant => combatant.getFlag(MODULE_ID, "side");
+export function sideOf(combatant) {
+  const assigned = combatant.getFlag(MODULE_ID, "side");
+  if (SIDES.includes(assigned)) return assigned;
+  if (combatant.actor?.type === "character") return "friendly";
+  if (combatant.actor?.type === "npc") return "hostile";
+  return undefined;
+}
+
+export function formatTotal(total) {
+  return new Intl.NumberFormat(game.i18n?.lang ?? "en", { maximumFractionDigits: 0 }).format(total);
+}
+
+export async function assignSide(combat, combatants, side) {
+  if (!enabled("sideInitiative") || !game.user.isGM) throw new Error("Only the DM can assign combat sides.");
+  if (!SIDES.includes(side)) throw new Error("Choose a friendly or hostile side.");
+  // Before combat, changed assignments invalidate any previously calculated totals.
+  if (!combat.started && combat.getFlag(MODULE_ID, "initiative")) await combat.unsetFlag(MODULE_ID, "initiative");
+  await combat.updateEmbeddedDocuments("Combatant", combatants.map(c => ({
+    _id: c.id, [`flags.${MODULE_ID}.side`]: side
+  })), { turnEvents: false });
+}
 
 /** Extend the configured system class rather than replacing dnd5e's recovery hooks. */
 export function createCombatClass(BaseCombat) {
   return class AdventurepeakCombat extends BaseCombat {
+    createGroups() {
+      const groups = super.createGroups();
+      if (!enabled("sideInitiative")) return groups;
+      const split = new Map();
+      for (const [key, group] of groups) {
+        for (const combatant of group.combatants) {
+          const sideKey = `${key}:adventurepeak:${sideOf(combatant) ?? "unassigned"}`;
+          if (!split.has(sideKey)) split.set(sideKey, {
+            ...group, combatants: [], expanded: this.expandedGroups.has(sideKey)
+          });
+          split.get(sideKey).combatants.push(combatant);
+        }
+      }
+      return split;
+    }
+
     _sortCombatants(a, b) {
       const state = a.parent?.getFlag(MODULE_ID, "initiative");
       if (enabled("sideInitiative") && state) {
@@ -102,7 +138,7 @@ export function renderSideControls(app, html) {
   // Totals can reveal hidden enemies; retain hidden information for the DM only.
   summary.textContent = state
     ? game.user.isGM
-      ? `Friendly ${state.totals.friendly} · Hostile ${state.totals.hostile} · ${state.order[0]} first`
+      ? `Friendly ${formatTotal(state.totals.friendly)} · Hostile ${formatTotal(state.totals.hostile)} · ${state.order[0]} first`
       : `${state.order[0]} side acts first`
     : "Side initiative: awaiting DM assignments and rolls";
   panel.append(summary);
@@ -116,22 +152,36 @@ export function renderSideControls(app, html) {
         .catch(report).finally(() => { button.disabled = false; });
     });
     panel.append(button);
-    for (const c of combat.combatants) {
-      const row = root.querySelector(`[data-combatant-id="${c.id}"]`);
-      if (!row) continue;
+    const addSelect = (container, combatants, label) => {
       const select = document.createElement("select");
       select.className = "adventurepeak-side-select";
-      select.setAttribute("aria-label", `Side for ${c.name}`);
+      select.setAttribute("aria-label", label);
       select.add(new Option("Assign side", ""));
       for (const side of SIDES) select.add(new Option(side === "friendly" ? "Friendly" : "Hostile", side));
-      select.value = sideOf(c) ?? "";
-      // Assign before starting. Late joiners can be assigned without changing totals.
-      select.disabled = combat.started && SIDES.includes(sideOf(c));
+      const sides = new Set(combatants.map(sideOf));
+      select.value = sides.size === 1 ? sideOf(combatants[0]) ?? "" : "";
+      // Keep native group header clicks from collapsing or recreating this control.
+      for (const type of ["click", "pointerdown", "dblclick"]) {
+        select.addEventListener(type, event => event.stopPropagation());
+      }
       select.addEventListener("change", event => {
         event.stopPropagation();
-        if (SIDES.includes(select.value)) c.setFlag(MODULE_ID, "side", select.value).catch(report);
+        if (!SIDES.includes(select.value)) return;
+        select.disabled = true;
+        assignSide(combat, combatants, select.value).catch(report).finally(() => { select.disabled = false; });
       });
-      row.append(select);
+      container.append(select);
+    };
+    for (const c of combat.combatants) {
+      const row = root.querySelector(`[data-combatant-id="${c.id}"]`);
+      if (row) addSelect(row, [c], `Side for ${c.name}`);
+    }
+    // dnd5e's visual groups are wrappers without a combatant ID of their own.
+    for (const row of root.querySelectorAll(".combatant-group")) {
+      const members = Array.from(row.querySelectorAll("[data-combatant-id]"), element =>
+        combat.combatants.get(element.dataset.combatantId)).filter(Boolean);
+      const header = row.querySelector(".group-header");
+      if (header && members.length) addSelect(header, members, "Side for this entire group");
     }
   }
   root.prepend(panel);
