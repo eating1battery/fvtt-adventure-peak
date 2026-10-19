@@ -1,11 +1,12 @@
 {
   "name": "adventurepeak",
-  "version": "0.1.0-dev",
+  "version": "0.1.0",
   "private": true,
   "type": "module",
   "scripts": {
     "test": "node --test",
-    "check": "node scripts/check.mjs"
+    "check": "node scripts/check.mjs",
+    "package": "python3 scripts/package-release.py"
   },
   "engines": {
     "node": ">=20"
