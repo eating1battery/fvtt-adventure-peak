@@ -36,7 +36,7 @@ export function recoverHitDieSlots(_rolls, { subject: actor, updates }) {
 }
 
 export function prepareRestResult(actor, result, config) {
-  if (!enabled("restRules")) return;
+  if (!enabled("restRules") || config.type !== "short") return;
   // The system's merge helpers may expand paths; flatten before removing native refills.
   result.updateData = adjustRestSlots(actor.system.spells,
     foundry.utils.flattenObject(result.updateData), { shortRest: config.type === "short" });

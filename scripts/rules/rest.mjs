@@ -14,8 +14,9 @@ export function recoverSlots(spells, count) {
   return updates;
 }
 
-/** Replace native rest slot refill with Adventurepeak's Pact Magic exception. */
+/** Customize short-rest recovery; long rests retain native spell slot recovery. */
 export function adjustRestSlots(spells, updates, { shortRest }) {
+  if (!shortRest) return updates;
   for (const path of Object.keys(updates)) {
     if (/^system\.spells\.[^.]+\.value$/.test(path)) delete updates[path];
   }

@@ -27,7 +27,7 @@ Create a Foundry VTT module named `adventurepeak` that contains table rules and 
 
 Status: core rule agreed; details below remain open.
 
-- Long rests do not automatically replenish spell slots.
+- Long rests restore spell slots normally, including Pact Magic. Hit Die spell slot recovery is an additional short-rest benefit.
 - Each Hit Die spent while resting restores two expended spell slots, starting with the lowest spell slot level.
 - Wizard Arcane Recovery is unaffected and may be used before this recovery.
 - The 2014 bard Song of Rest can be used to recover two spell slots, like a Hit Die.
@@ -63,7 +63,7 @@ Confirmed acceptance criteria:
 - Expended slots up to 9th level are eligible for Hit Die recovery.
 - Song of Rest retains its healing benefit while also providing two recovered spell slots.
 - Eight or more hours of rest alone does not qualify as a long rest without DM authorization.
-- A DM-authorized long rest does not automatically replenish spell slots.
+- A long rest replenishes spell slots normally, including Pact Magic.
 - Consecutive rest intervals do not grant additional uses of Song of Rest.
 - A short rest automatically restores up to two expended Pact Magic slots without spending a Hit Die.
 - A DM-authorized long rest restores up to half the character's total Hit Dice (rounded down, minimum one), limited to spent Hit Dice.

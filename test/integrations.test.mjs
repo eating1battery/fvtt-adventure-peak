@@ -114,3 +114,14 @@ test("both settings are world-scoped Booleans with reload requirements", () => {
     assert.equal(data.requiresReload, true);
   }
 });
+
+test("enabled rest rules preserve native long-rest slot recovery without flattening or modifying updates", () => {
+  settings.restRules = true;
+  const updateData = { system: { spells: { spell1: { value: 4 }, spell9: { value: 1 }, pact: { value: 4 } },
+    attributes: { hp: { value: 20 } } } };
+  const original = structuredClone(updateData);
+  const result = { updateData };
+  prepareRestResult(actor(), result, { type: 'long' });
+  assert.equal(result.updateData, updateData);
+  assert.deepEqual(result.updateData, original);
+});

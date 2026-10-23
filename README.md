@@ -2,7 +2,7 @@
 
 A Foundry Virtual Tabletop module for table rules and modifications to the base dnd5e system. This is pretty much just table rules for the world I play in. If you found this module, feel free to try it out, but it likely won't have any practical application outside of the game I participate in. 
 
-Initial release **0.1.0** for **Foundry 13.351** and **dnd5e 5.3.0**. See the [design document](docs/design.md) for the agreed rules and [development notes](docs/development.md) for current coverage and remaining work.
+Release **0.1.1** for **Foundry 13.351** and **dnd5e 5.3.0**. See the [design document](docs/design.md) for the agreed rules and [development notes](docs/development.md) for current coverage and remaining work.
 
 Two independent world settings control rest rules and side initiative. Both currently default to disabled, and changing either requires a reload.
 

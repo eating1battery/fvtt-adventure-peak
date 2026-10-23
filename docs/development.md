@@ -29,7 +29,7 @@ The first development increment includes:
 - Pure rule calculations separated from Foundry-specific integration code.
 - One-hour short rests and a checked-by-default automatic spell slot recovery checkbox in the native short rest dialog.
 - Two regular slots recovered per spent Hit Die, lowest level first, through 9th level. Recovery is added to the native actor update; healing is left to dnd5e. Full HP does not prevent spending a die in the native dialog.
-- Normal long rest spell slot refills suppressed. Player-initiated long rests show a DM-permission reminder but continue normally. A real, uncompleted GM-authored long rest request targeting the actor suppresses the reminder; GM-initiated long rests do not warn.
+- Long rests retain normal dnd5e spell slot recovery, including Pact Magic. Player-initiated long rests show a DM-permission reminder but continue normally. A real, uncompleted GM-authored long rest request targeting the actor suppresses the reminder; GM-initiated long rests do not warn.
 - The native long rest Hit Dice calculation configured with the 2014 half-total recovery fraction.
 - Automatic recovery of up to two Pact Magic slots per short rest.
 - Character actors default to friendly and NPC actors to hostile. Explicit GM assignments override these defaults, including during combat and for late joiners.
@@ -78,7 +78,7 @@ Manual checks to perform in a separate development world:
 4. Cancel a rest dialog, then roll a Hit Die outside a rest. Confirm the outside roll grants no slots.
 5. Use Arcane Recovery first, then spend Hit Dice. Confirm the already-restored slots are not counted as missing.
 6. Complete short rests with a warlock missing four, one, and zero Pact Magic slots. Confirm recovery of two, one, and zero respectively.
-7. Attempt an unrequested long rest as a player, then a targeted GM-requested long rest and a GM-initiated long rest. Check that an unrequested player rest warns but proceeds, requested and GM rests do not warn, and verify healing, absence of slot refill, and 2014 Hit Dice recovery, including level one and multiclass actors.
+7. Attempt an unrequested long rest as a player, then a targeted GM-requested long rest and a GM-initiated long rest. Check that an unrequested player rest warns but proceeds, requested and GM rests do not warn, and verify healing, normal spell slot refill, and 2014 Hit Dice recovery, including level one and multiclass actors.
 8. Enable only side initiative. Assign sides, roll all combatants, and calculate averages. Check the 12.5-versus-13.5 average example, ties, missing assignments, and unrolled combatants.
 9. Start combat, add/remove combatants, and reroll an individual. Confirm averages and side order remain frozen, with individual rolls visible.
 10. Queue a side swap and advance a round. Check both clients' order, unchanged averages, and individual effects at the boundary. This is especially important because automated substitutes do not reproduce Foundry's private turn-event dispatcher.

@@ -30,10 +30,11 @@ test("full or missing spell pools grant nothing and malformed counts fail", () =
   assert.throws(() => recoverSlots({}, 0.5), RangeError);
 });
 
-test("long rest removes native spell refills while preserving healing and resources", () => {
+test("long rest preserves all native spell refills, healing, and resources", () => {
   const updates = { "system.spells.spell1.value": 4, "system.spells.pact.value": 4,
     "system.attributes.hp.value": 40, "system.resources.primary.value": 3 };
   assert.deepEqual(adjustRestSlots({}, updates, { shortRest: false }), {
+    "system.spells.spell1.value": 4, "system.spells.pact.value": 4,
     "system.attributes.hp.value": 40, "system.resources.primary.value": 3
   });
 });
